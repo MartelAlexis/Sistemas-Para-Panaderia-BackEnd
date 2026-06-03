@@ -43,6 +43,7 @@ public class AuthService {
 
         userRepository.save(user);
 
+        emailService.sendOtpEmail(user.getEmail(), otp);
 
         return "Registro exitoso. Por favor revisa tu correo electrónico para verificar tu cuenta.";
     }
@@ -103,5 +104,52 @@ public class AuthService {
 
     private String generateOtp() {
         return String.format("%06d", new java.util.Random().nextInt(999999));
+    }
+
+    public AuthResponse verifyOtp(String email, String otp) {
+        var user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        if (user.getOtpCode() == null || !user.getOtpCode().equals(otp)) {
+            throw new RuntimeException("Código OTP inválido");
+        }
+
+        if (user.getOtpExpiration() != null && LocalDateTime.now().isAfter(user.getOtpExpiration())) {
+            throw new RuntimeException("El código OTP ha expirado");
+        }
+
+        user.setStatus("ACTIVE");
+        user.setOtpCode(null);
+        user.setOtpExpiration(null);
+        userRepository.save(user);
+
+        String jwtToken = jwtService.generateToken(user);
+
+        return AuthResponse.builder()
+                .token(jwtToken)
+                .id(user.getId())
+                .firstName(user.getFirstName())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .status(user.getStatus())
+                .build();
+    }
+
+    public String resendOtp(String email) {
+        var user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        if ("ACTIVE".equalsIgnoreCase(user.getStatus())) {
+            throw new RuntimeException("La cuenta ya está verificada.");
+        }
+
+        String otp = generateOtp();
+        user.setOtpCode(otp);
+        user.setOtpExpiration(LocalDateTime.now().plusMinutes(10));
+        userRepository.save(user);
+
+        emailService.sendOtpEmail(user.getEmail(), otp);
+
+        return "Se ha reenviado un nuevo código OTP a tu correo.";
     }
 }
