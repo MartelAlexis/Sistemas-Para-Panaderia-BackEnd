@@ -38,4 +38,15 @@ public class AuthController {
     public ResponseEntity<String> resendOtp(@RequestBody Map<String, String> request) {
         return ResponseEntity.ok(authService.resendOtp(request.get("email")));
     }
+    @PostMapping("/forgotPassword")
+    public ResponseEntity<String> forgotPassword(@RequestBody Map<String, String> request) {
+        return ResponseEntity.ok(authService.forgotPassword(request.get("email")));
+    }
+    @PostMapping("/resetPassword")
+    public ResponseEntity<String> resetPassword(@RequestBody Map<String, String> request) {
+        return ResponseEntity.ok(authService.resetPassword(
+                request.get("email"),
+                request.get("otp"),
+                request.get("newPassword")));
+    }
 }

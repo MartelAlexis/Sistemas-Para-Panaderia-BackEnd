@@ -68,6 +68,40 @@ public class AuthService {
                 .build();
     }
 
+    public String forgotPassword(String email) {
+        var user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        String otp = generateOtp();
+        user.setOtpCode(otp);
+        user.setOtpExpiration(LocalDateTime.now().plusMinutes(10));
+        userRepository.save(user);
+
+        emailService.sendOtpEmail(user.getEmail(), otp);
+
+        return "Se ha enviado un nuevo código OTP a tu correo.";
+    }
+
+    public String resetPassword(String email, String otp, String newPassword) {
+        var user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        if (user.getOtpCode() == null || !user.getOtpCode().equals(otp)) {
+            throw new RuntimeException("Código OTP inválido");
+        }
+
+        if (user.getOtpExpiration() != null && LocalDateTime.now().isAfter(user.getOtpExpiration())) {
+            throw new RuntimeException("El código OTP ha expirado");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        user.setOtpCode(null);
+        user.setOtpExpiration(null);
+        userRepository.save(user);
+
+        return "Contraseña actualizada correctamente.";
+    }
+
     private String generateOtp() {
         return String.format("%06d", new java.util.Random().nextInt(999999));
     }
