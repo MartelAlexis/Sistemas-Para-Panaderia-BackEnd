@@ -43,6 +43,7 @@ public class AuthService {
 
         userRepository.save(user);
 
+        emailService.sendOtpEmail(user.getEmail(), otp);
 
         return "Registro exitoso. Por favor revisa tu correo electrónico para verificar tu cuenta.";
     }
