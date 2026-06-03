@@ -67,6 +67,20 @@ public class AuthService {
                 .build();
     }
 
+    public String forgotPassword(String email) {
+        var user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        String otp = generateOtp();
+        user.setOtpCode(otp);
+        user.setOtpExpiration(LocalDateTime.now().plusMinutes(10));
+        userRepository.save(user);
+
+        emailService.sendOtpEmail(user.getEmail(), otp);
+
+        return "Se ha enviado un nuevo código OTP a tu correo.";
+    }
+
     private String generateOtp() {
         return String.format("%06d", new java.util.Random().nextInt(999999));
     }
