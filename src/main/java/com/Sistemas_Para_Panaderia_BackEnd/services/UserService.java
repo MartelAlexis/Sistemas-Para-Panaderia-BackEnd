@@ -1,9 +1,11 @@
 package com.Sistemas_Para_Panaderia_BackEnd.services;
 
 import com.Sistemas_Para_Panaderia_BackEnd.dtos.UserProfileDTO;
+import com.Sistemas_Para_Panaderia_BackEnd.dtos.ChangePasswordRequestDTO;
 import com.Sistemas_Para_Panaderia_BackEnd.entities.User;
 import com.Sistemas_Para_Panaderia_BackEnd.dtos.UpdateProfileRequestDTO;
 import com.Sistemas_Para_Panaderia_BackEnd.repositories.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,12 +14,27 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public UserProfileDTO getMyProfile(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         return mapToUserProfileDTO(user);
+    }
+
+    public String changePassword(String email, ChangePasswordRequestDTO request) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+            throw new RuntimeException("La contraseña actual es incorrecta");
+        }
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+
+        return "Contraseña actualizada exitosamente";
     }
 
     private UserProfileDTO mapToUserProfileDTO(User user) {
