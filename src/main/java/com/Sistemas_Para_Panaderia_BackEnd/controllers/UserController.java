@@ -3,6 +3,7 @@ package com.Sistemas_Para_Panaderia_BackEnd.controllers;
 import com.Sistemas_Para_Panaderia_BackEnd.dtos.UserProfileDTO;
 import com.Sistemas_Para_Panaderia_BackEnd.services.UserService;
 import com.Sistemas_Para_Panaderia_BackEnd.dtos.UpdateProfileRequestDTO;
+import com.Sistemas_Para_Panaderia_BackEnd.dtos.ChangePasswordRequestDTO;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -29,5 +30,10 @@ public class UserController {
     public ResponseEntity<UserProfileDTO> updateMyProfile(Principal principal,
                                                           @RequestBody UpdateProfileRequestDTO request) {
         return ResponseEntity.ok(userService.updateMyProfile(principal.getName(), request));
+    }
+
+    @PatchMapping("/me/password")
+    public ResponseEntity<String> changePassword(Principal principal, @RequestBody ChangePasswordRequestDTO request) {
+        return ResponseEntity.ok(userService.changePassword(principal.getName(), request));
     }
 }
