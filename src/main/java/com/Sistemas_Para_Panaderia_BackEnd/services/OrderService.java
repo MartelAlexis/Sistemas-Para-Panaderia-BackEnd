@@ -76,5 +76,30 @@ public class OrderService {
         return mapToOrderResponseDTO(order);
     }
 
-    
+    public List<OrderResponseDTO> getOrdersByUser(Long userId) {
+        return orderRepository.findByUserId(userId).stream()
+                .map(this::mapToOrderResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    private OrderResponseDTO mapToOrderResponseDTO(Order order) {
+        List<OrderItemResponseDTO> itemDTOs = order.getOrderItems().stream()
+                .map(item -> OrderItemResponseDTO.builder()
+                        .productId(item.getProduct().getId())
+                        .productName(item.getProduct().getName())
+                        .quantity(item.getQuantity())
+                        .price(item.getPrice())
+                        .subTotal(item.getPrice().multiply(new BigDecimal(item.getQuantity())))
+                        .build())
+                .collect(Collectors.toList());
+
+        return OrderResponseDTO.builder()
+                .id(order.getId())
+                .userId(order.getUser().getId())
+                .orderDate(order.getOrderDate())
+                .status(order.getStatus())
+                .totalAmount(order.getTotalAmount())
+                .items(itemDTOs)
+                .build();
+    }
 }
