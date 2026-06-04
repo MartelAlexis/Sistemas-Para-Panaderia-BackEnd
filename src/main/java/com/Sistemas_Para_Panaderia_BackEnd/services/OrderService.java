@@ -102,4 +102,20 @@ public class OrderService {
                 .items(itemDTOs)
                 .build();
     }
+     public List<OrderResponseDTO> getAllOrders() {
+        return orderRepository.findAll().stream()
+                .map(this::mapToOrderResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    public OrderResponseDTO updateOrderStatus(Long orderId, String newStatus) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Orden no encontrada"));
+        
+        order.setStatus(newStatus);
+        order = orderRepository.save(order);
+        
+        return mapToOrderResponseDTO(order);
+    }
+
 }
