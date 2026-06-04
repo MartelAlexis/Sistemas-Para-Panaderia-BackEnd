@@ -2,6 +2,7 @@ package com.Sistemas_Para_Panaderia_BackEnd.services;
 
 import com.Sistemas_Para_Panaderia_BackEnd.dtos.UserProfileDTO;
 import com.Sistemas_Para_Panaderia_BackEnd.entities.User;
+import com.Sistemas_Para_Panaderia_BackEnd.dtos.UpdateProfileRequestDTO;
 import com.Sistemas_Para_Panaderia_BackEnd.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,5 +29,18 @@ public class UserService {
                 .address(user.getAddress())
                 .role(user.getRole())
                 .build();
+    }
+
+    public UserProfileDTO updateMyProfile(String email, UpdateProfileRequestDTO request) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        user.setFirstName(request.getFirstName());
+        user.setPhone(request.getPhone());
+        user.setAddress(request.getAddress());
+
+        userRepository.save(user);
+
+        return mapToUserProfileDTO(user);
     }
 }
