@@ -2,6 +2,7 @@ package com.Sistemas_Para_Panaderia_BackEnd.controllers;
 
 import com.Sistemas_Para_Panaderia_BackEnd.dtos.UserProfileDTO;
 import com.Sistemas_Para_Panaderia_BackEnd.services.UserService;
+import com.Sistemas_Para_Panaderia_BackEnd.dtos.UpdateProfileRequestDTO;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -22,5 +23,11 @@ public class UserController {
     @GetMapping("/me")
     public ResponseEntity<UserProfileDTO> getMyProfile(Principal principal) {
         return ResponseEntity.ok(userService.getMyProfile(principal.getName()));
+    }
+
+    @PutMapping("/me")
+    public ResponseEntity<UserProfileDTO> updateMyProfile(Principal principal,
+                                                          @RequestBody UpdateProfileRequestDTO request) {
+        return ResponseEntity.ok(userService.updateMyProfile(principal.getName(), request));
     }
 }
