@@ -27,4 +27,22 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
+    public List<ProductResponseDTO> getProductsByCategory(Long categoryId) {
+        return productRepository.findByCategoryIdAndStatus(categoryId, "DISPONIBLE").stream()
+                .map(this::mapToResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    private ProductResponseDTO mapToResponseDTO(Product product) {
+        return ProductResponseDTO.builder()
+                .id(product.getId())
+                .name(product.getName())
+                .description(product.getDescription())
+                .price(product.getPrice())
+                .stock(product.getStock())
+                .imageUrl(product.getImageUrl())
+                .status(product.getStatus())
+                .categoryName(product.getCategory() != null ? product.getCategory().getName() : null)
+                .build();
+    }
 }
