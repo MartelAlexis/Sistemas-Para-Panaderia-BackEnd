@@ -29,4 +29,20 @@ public class AdminProductController {
     public ResponseEntity<List<ProductResponseDTO>> getLowStockProducts() {
         return ResponseEntity.ok(productService.getLowStockProducts());
     }
+
+    @PostMapping({"", "/"})
+    public ResponseEntity<ProductResponseDTO> createProduct(@RequestBody ProductRequestDTO request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(productService.createProduct(request));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ProductResponseDTO> updateProduct(@PathVariable Long id, @RequestBody ProductRequestDTO request) {
+        return ResponseEntity.ok(productService.updateProduct(id, request));
+    }
+
+    @PatchMapping("/{id}/deactivate")
+    public ResponseEntity<String> deactivateProduct(@PathVariable Long id) {
+        productService.deactivateProduct(id);
+        return ResponseEntity.ok("Producto desactivado exitosamente.");
+    }
 }
