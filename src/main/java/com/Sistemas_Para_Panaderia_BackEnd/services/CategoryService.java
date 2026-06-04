@@ -27,4 +27,14 @@ public class CategoryService {
                 .description(category.getDescription())
                 .build();
     }
+
+     public CategoryDTO createCategory(CategoryDTO request) {
+        Category category = Category.builder()
+                .name(request.getName())
+                .description(request.getDescription())
+                .build();
+                
+        categoryRepository.save(category);
+        return mapToDTO(category);
+    }
 }
