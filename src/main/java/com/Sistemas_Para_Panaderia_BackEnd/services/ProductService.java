@@ -38,6 +38,32 @@ public class ProductService {
         return mapToResponseDTO(product);
     }
 
+    public ProductResponseDTO updateProduct(Long id, ProductRequestDTO request) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+
+        Category category = categoryRepository.findById(request.getCategoryId())
+                .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+
+        product.setName(request.getName());
+        product.setDescription(request.getDescription());
+        product.setPrice(request.getPrice());
+        product.setStock(request.getStock());
+        product.setImageUrl(request.getImageUrl());
+        product.setCategory(category);
+
+        product = productRepository.save(product);
+        return mapToResponseDTO(product);
+    }
+
+    public void deactivateProduct(Long id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+                
+        product.setStatus("INACTIVO");
+        productRepository.save(product);
+    }
+
 
     public ProductResponseDTO getProductById(Long id) {
         Product product = productRepository.findById(id)
