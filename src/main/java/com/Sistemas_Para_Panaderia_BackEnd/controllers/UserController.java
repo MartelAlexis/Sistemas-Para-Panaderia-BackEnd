@@ -1,9 +1,9 @@
 package com.Sistemas_Para_Panaderia_BackEnd.controllers;
 
+import com.Sistemas_Para_Panaderia_BackEnd.dtos.ChangePasswordRequestDTO;
+import com.Sistemas_Para_Panaderia_BackEnd.dtos.UpdateProfileRequestDTO;
 import com.Sistemas_Para_Panaderia_BackEnd.dtos.UserProfileDTO;
 import com.Sistemas_Para_Panaderia_BackEnd.services.UserService;
-import com.Sistemas_Para_Panaderia_BackEnd.dtos.UpdateProfileRequestDTO;
-import com.Sistemas_Para_Panaderia_BackEnd.dtos.ChangePasswordRequestDTO;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +17,7 @@ import java.security.Principal;
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
 @Tag(name = "Usuarios")
+
 public class UserController {
 
     private final UserService userService;
@@ -28,7 +29,7 @@ public class UserController {
 
     @PutMapping("/me")
     public ResponseEntity<UserProfileDTO> updateMyProfile(Principal principal,
-                                                          @RequestBody UpdateProfileRequestDTO request) {
+            @RequestBody UpdateProfileRequestDTO request) {
         return ResponseEntity.ok(userService.updateMyProfile(principal.getName(), request));
     }
 

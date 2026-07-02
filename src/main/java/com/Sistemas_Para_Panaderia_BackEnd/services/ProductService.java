@@ -1,13 +1,13 @@
 package com.Sistemas_Para_Panaderia_BackEnd.services;
 
+import com.Sistemas_Para_Panaderia_BackEnd.dtos.ProductRequestDTO;
 import com.Sistemas_Para_Panaderia_BackEnd.dtos.ProductResponseDTO;
+import com.Sistemas_Para_Panaderia_BackEnd.entities.Category;
 import com.Sistemas_Para_Panaderia_BackEnd.entities.Product;
+import com.Sistemas_Para_Panaderia_BackEnd.repositories.CategoryRepository;
 import com.Sistemas_Para_Panaderia_BackEnd.repositories.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import com.Sistemas_Para_Panaderia_BackEnd.dtos.ProductRequestDTO;
-import com.Sistemas_Para_Panaderia_BackEnd.entities.Category;
-import com.Sistemas_Para_Panaderia_BackEnd.repositories.CategoryRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 public class ProductService {
 
     private final ProductRepository productRepository;
-
     private final CategoryRepository categoryRepository;
 
     public ProductResponseDTO createProduct(ProductRequestDTO request) {
@@ -56,14 +55,18 @@ public class ProductService {
         return mapToResponseDTO(product);
     }
 
-    public void deactivateProduct(Long id) {
+    public ProductResponseDTO toggleProductStatus(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
                 
-        product.setStatus("INACTIVO");
-        productRepository.save(product);
+        if ("INACTIVO".equals(product.getStatus())) {
+            product.setStatus("DISPONIBLE");
+        } else {
+            product.setStatus("INACTIVO");
+        }
+        product = productRepository.save(product);
+        return mapToResponseDTO(product);
     }
-
 
     public ProductResponseDTO getProductById(Long id) {
         Product product = productRepository.findById(id)
@@ -71,7 +74,7 @@ public class ProductService {
         return mapToResponseDTO(product);
     }
 
-     public List<ProductResponseDTO> getAllProducts() {
+    public List<ProductResponseDTO> getAllProducts() {
         return productRepository.findAll().stream()
                 .map(this::mapToResponseDTO)
                 .collect(Collectors.toList());
