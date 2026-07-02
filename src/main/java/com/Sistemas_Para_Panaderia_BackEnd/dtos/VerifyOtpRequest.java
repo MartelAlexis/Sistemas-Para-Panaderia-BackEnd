@@ -7,12 +7,9 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class UpdateProfileRequestDTO {
-    private String firstName;
-    private String lastName;
-    private String dni;
-    private String phone;
-    private String address;
+@NoArgsConstructor
+public class VerifyOtpRequest {
+    private String email;
+    private String otp;
 }

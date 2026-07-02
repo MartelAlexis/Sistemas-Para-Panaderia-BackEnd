@@ -39,6 +39,9 @@ public class OrderService {
                 .orderDate(LocalDateTime.now())
                 .status("PENDIENTE")
                 .totalAmount(BigDecimal.ZERO)
+                .deliveryAddress(request.getDeliveryAddress())
+                .deliveryPhone(request.getDeliveryPhone())
+                .deliveryNotes(request.getDeliveryNotes())
                 .build();
 
         List<OrderItem> orderItems = new ArrayList<>();
@@ -82,27 +85,7 @@ public class OrderService {
                 .collect(Collectors.toList());
     }
 
-    private OrderResponseDTO mapToOrderResponseDTO(Order order) {
-        List<OrderItemResponseDTO> itemDTOs = order.getOrderItems().stream()
-                .map(item -> OrderItemResponseDTO.builder()
-                        .productId(item.getProduct().getId())
-                        .productName(item.getProduct().getName())
-                        .quantity(item.getQuantity())
-                        .price(item.getPrice())
-                        .subTotal(item.getPrice().multiply(new BigDecimal(item.getQuantity())))
-                        .build())
-                .collect(Collectors.toList());
-
-        return OrderResponseDTO.builder()
-                .id(order.getId())
-                .userId(order.getUser().getId())
-                .orderDate(order.getOrderDate())
-                .status(order.getStatus())
-                .totalAmount(order.getTotalAmount())
-                .items(itemDTOs)
-                .build();
-    }
-     public List<OrderResponseDTO> getAllOrders() {
+    public List<OrderResponseDTO> getAllOrders() {
         return orderRepository.findAll().stream()
                 .map(this::mapToOrderResponseDTO)
                 .collect(Collectors.toList());
@@ -118,4 +101,28 @@ public class OrderService {
         return mapToOrderResponseDTO(order);
     }
 
+    private OrderResponseDTO mapToOrderResponseDTO(Order order) {
+        List<OrderItemResponseDTO> itemDTOs = order.getOrderItems().stream()
+                .map(item -> OrderItemResponseDTO.builder()
+                        .productId(item.getProduct().getId())
+                        .productName(item.getProduct().getName())
+                        .imageUrl(item.getProduct().getImageUrl())
+                        .quantity(item.getQuantity())
+                        .price(item.getPrice())
+                        .subTotal(item.getPrice().multiply(new BigDecimal(item.getQuantity())))
+                        .build())
+                .collect(Collectors.toList());
+
+        return OrderResponseDTO.builder()
+                .id(order.getId())
+                .userId(order.getUser().getId())
+                .orderDate(order.getOrderDate())
+                .status(order.getStatus())
+                .totalAmount(order.getTotalAmount())
+                .deliveryAddress(order.getDeliveryAddress())
+                .deliveryPhone(order.getDeliveryPhone())
+                .deliveryNotes(order.getDeliveryNotes())
+                .items(itemDTOs)
+                .build();
+    }
 }

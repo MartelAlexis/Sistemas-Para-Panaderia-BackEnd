@@ -1,12 +1,12 @@
 package com.Sistemas_Para_Panaderia_BackEnd.services;
 
+import com.Sistemas_Para_Panaderia_BackEnd.dtos.BranchRequestDTO;
 import com.Sistemas_Para_Panaderia_BackEnd.entities.Branch;
 import com.Sistemas_Para_Panaderia_BackEnd.repositories.BranchRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import com.Sistemas_Para_Panaderia_BackEnd.dtos.BranchRequestDTO;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +36,7 @@ public class BranchService {
     public Branch toggleBranchStatus(Long id) {
         Branch branch = branchRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Sede no encontrada"));
-
+        
         branch.setIsActive(!branch.getIsActive());
         return branchRepository.save(branch);
     }

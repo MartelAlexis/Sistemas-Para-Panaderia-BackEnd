@@ -11,11 +11,6 @@ import java.math.BigDecimal;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderItemResponseDTO {
-    private Long productId;
-    private String productName;
-    private String imageUrl;
-    private Integer quantity;
-    private BigDecimal price;
-    private BigDecimal subTotal;
+public class SalesAnalyticsDTO {
+    private BigDecimal totalSales;
 }
